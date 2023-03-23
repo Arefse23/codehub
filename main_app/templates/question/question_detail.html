@@ -18,9 +18,10 @@
 
 <div class="card">
     <div class="card-content ">
+      <div class="grey darken-4 dar"><span class="card-title">Title: {{ question.title }}</span></div>
       <div class="flex-container">
-        <div>
-          <span class="card-title">Title: {{ question.title }}</span>
+          
+          <div class="main-dar">
           <p>Body: {{ question.body|safe}}</p>
           <p>Date: {{ question.date }}</p>
           {% load static %}
@@ -33,6 +34,7 @@
             style="vertical-align: middle;">
             <span>{{ question.user.username }}</span></a>
           </div>
+        
           
         </div>
       </div>
@@ -65,14 +67,15 @@
   {% for answer in answers %}
   <div class="card">
     <div class="card-content ">
+      <div class="grey darken-4 dar"><span class="card-title">Title: {{ answer.title }}</span></div>
       <div class="flex-container">
-        <div>
-          <span class="card-title">Title: {{ answer.title }}</span>
+        <div class="main-dar">
+          
           <p>Body: {{ answer.body|safe}}</p>
           <p>Date: {{ answer.date }}</p>
           {% load static %}
           <div class="profile-container profile-header comment">
-            <a class="dropdown-trigger" href="{% url 'profile_index' %}">
+            <a class="dropdown-trigger" href="{% url 'profile_index' %}">zz
             <img src="{% if answer.user.profile.avatar %}
             {% static answer.user.profile.avatar|cut:'main_app/static/' %}
             {% else %}{% static 'images/profile/guest.png' %}{% endif %}" 

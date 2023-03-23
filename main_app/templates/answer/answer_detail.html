@@ -19,9 +19,9 @@
 
 <div class="card">
   <div class="card-content ">
+    <div class="grey darken-4 dar"><span class="card-title">Title: {{ answer.title }}</span></div>
     <div class="flex-container">
-      <div>
-        <span class="card-title">Title: {{ answer.title }}</span>
+      <div class="main-dar">
         <p>Body: {{ answer.body|safe}}</p>
         <p>Date: {{ answer.date }}</p>
         {% load static %}
@@ -96,9 +96,9 @@
 {% for reply in replies %}
 <div class="card">
     <div class="card-content ">
+      <div class="grey darken-4 dar"><span class="card-title">Title: {{ reply.title }}</span></div>
       <div class="flex-container">
-        <div>
-          <span class="card-title">Title: {{ reply.title }}</span>
+        <div class="main-dar">
           <p>Body: {{ reply.body|safe}}</p>
           <p>Date: {{ reply.date }}</p>
           {% load static %}

@@ -5,7 +5,7 @@
 <ul class="collapsible">
 {% for category in categories %}
     <li class="{% if category.id is categories.first.id %}active{% endif %}">
-      <div class="collapsible-header">
+      <div class="collapsible-header grey darken-4">
           <i class="material-icons">{{ category.icon_code }}</i>
           <!--Category Name-->
           <span>{{ category.name }}</span>
@@ -40,7 +40,7 @@
           </tbody>
         </table>
         <!-- Indiviual Category Link -->
-        <a id="submit-btn" href="/category/{{category.id}}" class="blue-grey lighten-2 btn"><i class="material-icons left">view_list</i> View More</a>
+        <a id="submit-btn" href="/category/{{category.id}}" class="grey darken-4 btn"><i class="material-icons left">view_list</i> View More</a>
       </div>
     </li>
 {% endfor %}
