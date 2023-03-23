@@ -1,14 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
-<nav id="sub-nav">
-    <ul class="blue-text">
-        <li ><a class="grey darken-4 btn" href="{% url 'profile_update' %}"><i class="material-icons left">edit_note</i> Edit Profile</a></li>
-        <li ><a class="grey darken-4 btn" href="{% url 'change_password' %}"><i class="material-icons left">key</i> Change Password</a></li>
-        <li ><a class="grey darken-4 btn" href="{% url 'profile_answer' %}"><i class="material-icons left">question_answer</i> My Answers</a></li>
-        <li ><a class="grey darken-4 btn" href="{% url 'profile_question' %}"><i class="material-icons left">quiz</i> My Questions</a></li>
-        <li class="right"><a class="grey darken-4 btn" href="{% url 'logout' %}"><i class="material-icons left">logout</i>Logout</a></li>
-    </ul>
-</nav>
+<div id="sub-nav">
+    <a class="grey darken-4 btn" href="{% url 'profile_update' %}">
+      <i class="material-icons left">edit_note</i> Edit Profile
+    </a>
+
+    <a class="grey darken-4 btn" href="{% url 'change_password' %}">
+      <i class="material-icons left">key</i>
+      Change Password</a>
+
+    <a class="grey darken-4 btn" href="{% url 'profile_answer' %}">
+      <i class="material-icons left">question_answer</i>
+      My Answers</a>
+    
+    <a class="grey darken-4 btn" href="{% url 'profile_question' %}">
+      <i class="material-icons left">quiz</i> 
+      My Questions
+    </a>
+    
+    <a class="grey darken-4 btn" href="{% url 'logout' %}">
+      <i class="material-icons left">logout</i>
+      Logout
+    </a>
+</div>
 {% load static %}
 <div class="profile-container profile-header">
     <img src="{% if user.profile.avatar %}{% static user.profile.avatar|cut:'main_app/static/' %}{% else %}{% static 'images/profile/guest.png' %}{% endif %}">

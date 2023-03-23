@@ -5,6 +5,12 @@
     <!--Category Description-->
     <span>{{ category.description }}</span>
 </blockquote>
+<div>
+  <a class="btn green" href="{% url 'create_question' %}">
+    Add Question
+    <i class="material-icons left">add</i>
+  </a>
+</div>
 <table class="striped">
     <thead>
       <!--Table Headers-->
@@ -19,7 +25,18 @@
       {% for question in  questions %}
       <tr>
         <td style="width: 50%;"><a href="{% url 'question_detail' question.id %}">{{ question.title }}</a></td>
-        <td>{{ question.user }}</td>
+        <td>
+          {% load static %}
+          <div class="profile-container list">
+            <a href="{% url 'profile_detail' question.user.id %}">
+              <img src="{% if question.user.profile.avatar %}
+              {% static question.user.profile.avatar|cut:'main_app/static/' %}
+              {% else %}{% static 'images/profile/guest.png' %}{% endif %}" 
+              style="vertical-align: middle;">
+              <span>{{ question.user.username }}</span>
+            </a>
+          </div>
+        </td>
         <td>{{ question.date }}</td>
       </tr>
       {% endfor %}

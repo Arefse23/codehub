@@ -173,7 +173,7 @@ to allow user uploading profile pictures
 
 ## Application Architecture
 ERD:
-![This is an image](ReadME-imgs/imgERD.png)
+![This is an image](ReadME-imgs/imgERD.jpg)
 
 ## Wireframes:
 ![This is an image](ReadME-imgs/imgWF1.png)

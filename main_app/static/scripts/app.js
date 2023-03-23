@@ -7,4 +7,6 @@ $(document).ready(function () {
     });
     //collapsible
     $('.collapsible').collapsible();
+    //Modals
+    $('.modal').modal();
 });

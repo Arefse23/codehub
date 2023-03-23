@@ -41,11 +41,7 @@ def question_index(request):
         questions = Question.objects.filter(title__icontains = search)
     categories = Category.objects.all().order_by('id')
     return render(request,'question/question_index.html', 
-    {'questions': questions, 'categories': categories})
-
-def question_profile(request):
-    questions = Question.objects.filter(user = request.user)
-    return render(request,'question/questionp_index.html', {'questions': questions})
+    {'questions': questions.order_by('-id'), 'categories': categories})
 
 def question_detail(request, question_id):
     question= Question.objects.get(id=question_id)
@@ -53,30 +49,35 @@ def question_detail(request, question_id):
     answer_form = CreateAnswerForm()
     return render(request, 'question/question_detail.html', {'question': question, 'answers':answers, 'answer_form': answer_form})
 
-class CreateQuestion(LoginRequiredMixin,CreateView):
+class CreateQuestion(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model= Question
     fields = ['title', 'body', 'category']
+    success_message = 'Question created successfully!'
     def form_valid(self, form) :
         form.instance.user = self.request.user
         return super().form_valid(form)
     
-class QuestionUpdate(LoginRequiredMixin, UpdateView):
+class QuestionUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Question
     fields = ['title', 'body', 'category']
+    success_message = 'Question updated successfully!'
+    def form_valid(self, form) :
+        if form.instance.user != self.request.user:
+            messages.error(self.request,'Error: not authorized!')
+            return redirect('home')
+        return super().form_valid(form)
 
-class QuestionDelete(LoginRequiredMixin , DeleteView):
+class QuestionDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Question
     success_url = '/question/'
-
+    success_message = 'Question removed successfully!'
+    def form_valid(self, form) :
+        if self.object.user != self.request.user:
+            messages.error(self.request,'Error: not authorized!')
+            return redirect('home')
+        return super().form_valid(form)
 
 # =======================Answer Section========================
-
-@login_required
-def answer_index(request):
-    answers = Answer.objects.filter(user = request.user)
-    return render(request,'answer/answer_index.html', {'answers': answers})
-
-@login_required
 def answer_detail(request, answer_id):
     answer= Answer.objects.get(id=answer_id)
     replies = Reply.objects.filter(answer=answer).order_by('-id')
@@ -91,29 +92,42 @@ def answer_create(request, question_id):
         answer.question = Question.objects.get(id=question_id)
         answer.user = request.user
         answer.save()
+        messages.success(request, 'Answer created successfully!')
     return redirect('question_detail', question_id = question_id)
 
-class AnswerUpdate(LoginRequiredMixin,UpdateView):
+class AnswerUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Answer
     fields = ['title', 'body']
+    success_message = 'Answer updated successfully!'
+    def form_valid(self, form) :
+        if form.instance.user != self.request.user:
+            messages.error(self.request,'Error: not authorized!')
+            return redirect('home')
+        return super().form_valid(form)
 
-class AnswerDelete(LoginRequiredMixin,DeleteView):
+
+class AnswerDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Answer
+    success_message = 'Answer deleted successfully!'
     def get_success_url(self):
         return reverse('question_detail', args=([str(self.object.question.id)]))
+    def form_valid(self, form) :
+        if self.object.user != self.request.user:
+            messages.error(self.request,'Error: not authorized!')
+            return redirect('home')
+        return super().form_valid(form)
 
 # =======================Reply Section========================
 
-@login_required
 def reply_index(request):
     replies = Reply.objects.all()
     return render(request,'reply/reply_index.html', {'replies': replies})
 
-@login_required
 def reply_detail(request, reply_id):
     reply = Reply.objects.get(id=reply_id)
     return render(request, 'reply/reply_detail.html', {'reply': reply })
 
+@login_required
 def reply_create(request, answer_id):
     form = CreateReplyForm(request.POST)
     if form.is_valid():
@@ -121,17 +135,31 @@ def reply_create(request, answer_id):
         reply.answer = Answer.objects.get(id=answer_id)
         reply.user = request.user
         reply.save()
+        messages.success(request, 'Reply created successfully!')
     return redirect('answer_detail', answer_id = answer_id)
     
 
-class ReplyUpdate(LoginRequiredMixin,UpdateView):
+class ReplyUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Reply
-    fields = '__all__'
+    fields = ['title', 'body']
+    success_message = 'Reply updated successfully!'
+    def form_valid(self, form) :
+        if form.instance.user != self.request.user:
+            messages.error(self.request,'Error: not authorized!')
+            return redirect('home')
+        return super().form_valid(form)
+    
 
-class ReplyDelete(LoginRequiredMixin,DeleteView):
+class ReplyDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Reply
+    success_message = 'Reply deleted successfully!'
     def get_success_url(self):
         return reverse('answer_detail', args=([str(self.object.answer.id)]))
+    def form_valid(self, form) :
+        if self.object.user != self.request.user:
+            messages.error(self.request,'Error: not authorized!')
+            return redirect('home')
+        return super().form_valid(form)
 
 
 # =======================Auth Section========================
@@ -157,6 +185,7 @@ def signup(request):
     context = {'form': formSecond}
     return render(request, 'registration/signup.html', context)
 
+@login_required
 def change_password(request):
     if request.method == 'POST':
         # Make a 'user' form object with the data from the browser
@@ -185,9 +214,9 @@ def profile_index(request):
     badges_profile_doesnt_have = Badge.objects.exclude(id__in = profile.badges.all().values_list('id'))
     return render(request, 'profile/index.html', {'badges' : badges_profile_doesnt_have} )
 
-def profile2_index(request):
+def profile_list(request):
     profiles = Profile.objects.all()
-    return render(request,'profile/profile2_index.html', {'profiles': profiles})
+    return render(request,'profile/profile_list.html', {'profiles': profiles})
 
 def profile_detail(request, user_id):
     user = User.objects.get(id=user_id)
@@ -210,6 +239,17 @@ def profile_update(request):
 
     return render(request, 'profile/update.html', {'user_form': user_form, 'profile_form': profile_form})
 
+@login_required
+def profile_question(request):
+    questions = Question.objects.filter(user = request.user)
+    return render(request,'question/questionp_index.html', {'questions': questions.order_by('-id')})
+
+@login_required
+def profile_answer(request):
+    answers = Answer.objects.filter(user = request.user)
+    return render(request,'answer/answer_index.html', {'answers': answers})
+
+
 # =======================Category Section========================
 
 def category_detail(request, category_id):
@@ -223,27 +263,26 @@ def check_badge(user, point_difference):
     #modify user profile points
     profile = Profile.objects.get(user=user)
     profile.points += point_difference
-
     #add badge to user profile
     badges = Badge.objects.filter(point_limit=profile.points)
-
     for badge in badges:
         if(not profile.badges.contains(badge)):
             profile.badges.add(badge)
-
     profile.save()
 
 # =======================Like/Dislike Section========================
-
+@login_required
 def like_answer(request, pk):
     answer = Answer.objects.get(pk=pk)
     #toggle like
     if(answer.likes.contains(request.user)):
         answer.likes.remove(request.user)
         check_badge(answer.user, -1)
+        messages.success(request, 'Answer like removed successfully!')
     else:
         answer.likes.add(request.user)
         check_badge(answer.user, 1)
+        messages.success(request, 'Answer like added successfully!')
     #remove dislike from answer if it exists
     if(answer.dislikes.contains(request.user)):
         answer.dislikes.remove(request.user)
@@ -251,15 +290,18 @@ def like_answer(request, pk):
     answer.save()
     return redirect(f'/question/{answer.question.id}')
 
+@login_required
 def dislike_answer(request, pk):
     answer = Answer.objects.get(pk=pk)
     #toggle dislike
     if(answer.dislikes.contains(request.user)):
         answer.dislikes.remove(request.user)
         check_badge(answer.user, 1)
+        messages.success(request, 'Answer dislike removed successfully!')
     else:
         answer.dislikes.add(request.user)
         check_badge(answer.user, -1)
+        messages.success(request, 'Answer dislike added successfully!')
     #remove dislike from answer if it exists
     if(answer.likes.contains(request.user)):
         answer.likes.remove(request.user)

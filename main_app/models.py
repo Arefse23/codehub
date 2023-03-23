@@ -47,7 +47,7 @@ class Reply(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reply_user')
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
     def get_absolute_url(self):
-        return reverse('reply_index')
+        return reverse('answer_detail', args=([str(self.answer.id)]))
     
     def __str__(self):
         return self.title

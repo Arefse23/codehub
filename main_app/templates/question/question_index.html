@@ -1,16 +1,12 @@
 {% extends 'base.html' %} 
 {% block content %}
-<nav id="sub-nav">
-  <ul class="blue-text">
+<div id="sub-nav">
     {% for category in categories %}
-    <li> 
       <a href="/category/{{category.id}}" class="grey darken-4 btn">
         <i class="material-icons left">{{ category.icon_code }}</i> 
         {{category.name}}</a>
-    </li>
     {% endfor %}
-  </ul>
-</nav>
+</div>
 
 <h1>Question List</h1>
 <form style="text-align: left;" method="get" action="">
@@ -21,9 +17,13 @@
   </div>
 </form>
 
-
+<div>
+  <a class="btn green" href="{% url 'create_question' %}">
+    Add Question
+    <i class="material-icons left">add</i>
+  </a>
+</div>
 {% if questions.count %}
-<div><a class="btn blue" href="{% url 'create_question' %}">Add Question</a></div>
 <table class="striped">
   <thead>
     <!--Table Headers-->
@@ -37,7 +37,18 @@
     {% for question in  questions %}
     <tr>
       <td style="width: 50%;"><a href="{% url 'question_detail' question.id %}">{{ question.title }}</a></td>
-      <td><a href={% url 'profile_detail' question.user.id %}>{{ question.user }}</a></td>
+      <td>
+        {% load static %}
+        <div class="profile-container list">
+          <a href="{% url 'profile_detail' question.user.id %}">
+            <img src="{% if question.user.profile.avatar %}
+            {% static question.user.profile.avatar|cut:'main_app/static/' %}
+            {% else %}{% static 'images/profile/guest.png' %}{% endif %}" 
+            style="vertical-align: middle;">
+            <span>{{ question.user.username }}</span>
+          </a>
+        </div>
+      </td>
       <td>{{ question.date }}</td>
     </tr>
     {% endfor %}
@@ -46,4 +57,11 @@
 {% else %}
 <p style="text-align: center;">No Questions Found</p>
 {% endif %}
+
+<!--Messages-->
+{% for message in messages %}
+<script>
+  M.toast({html: '{{ message }}'})
+</script>
+{% endfor %}
 {% endblock %}

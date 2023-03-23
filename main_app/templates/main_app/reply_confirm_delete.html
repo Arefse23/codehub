@@ -1,13 +1,20 @@
 {% extends 'base.html' %}
-
 {% block content %}
-  <h1>Delete Reply</h1>
+{% if user.id is reply.user.id %}
+<h1>Delete Reply</h1>
 
   <h4>Are you sure you want to delete <span class="teal-text">{{ object.name }}</span>?</h4>
 
   <form action="" method="POST">
     {% csrf_token %}
-    <input type="submit" value="Yes - Delete!" class="btn blue">
+    <button class="grey darken-4 waves-effect waves-light btn" type="submit" name="Confirm" value="signup">Confirm Delete
+      <i class="material-icons left">delete</i>
+    </button>
     <a href="{% url 'reply_detail' reply.id %}">Cancel</a>
   </form>
+{% else %}
+<p>You are not allowed here and you know it ;) </p>
+{% endif %}
+
+  
 {% endblock %}

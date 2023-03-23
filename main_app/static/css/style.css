@@ -15,7 +15,7 @@ body{
 main {
     flex: 1 0 auto;
     background: url('/static/images/background/image.jpg');
-    background-size: contain;
+    background-size: 100%;
     background-position: top;
 }
 
@@ -26,6 +26,10 @@ main {
 .flex-container {
     display: flex;
     justify-content: space-between;
+}
+
+.container{
+
 }
 
 /* Nav Bar */
@@ -118,9 +122,13 @@ blockquote{
 
 /* Sub nav */
 #sub-nav{
-    background-color: white;
-    box-shadow: none;
-    margin-top: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+#sub-nav a{
+    margin: 5px !important;
 }
 
 /* Profile Page */
@@ -144,7 +152,7 @@ blockquote{
     background-color: white;
     min-height: 100%;
     border: solid white;
-    padding: 0 20px;
+    padding: 0 20px 40px 20px;
 }
 
 /* preview profile image */
@@ -159,24 +167,33 @@ blockquote{
 
 /*code block styling*/
 pre{
-background-color: #e0dfdf;
-border-radius: 8px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    overflow: auto;
 }
 
 code {
-    font-family: Consolas,"courier new";
     color: rgb(11, 8, 179);
-    padding-left: 20px !important;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    font-size: 17px !important;
+    font-size: 14px !important;
     display: inline-block;
-  }
+    padding: 10px;
+}
+
+pre > code{
+    display:block;
+}
 
 /* comments user profile */
 .comment img{
     width: 50px;
     height: 50px;
+}
+
+/* list profile */
+.list img{
+    width: 25px;
+    height: 25px;
+    margin: 0 !important;
 }
 
 /*ckeditor*/
@@ -223,30 +240,14 @@ z-index: 1;
 visibility: visible;
 }
 
-.collapsible-header{
-    color: #fff !important;
+/* row */
+.row{
+    display: flex;
+    flex-direction: row;
+    margin: 0 !important;
+    margin-top: 10px !important;
+    align-items: center;
 }
-
-.dar{
-    margin: 0;
-    color: #fff;
-    height: 35px;
-    width: 100%;
-    display: inline-block;
-}
-
-.dar span{
-    margin-left: 14px;
-}
-
-.main-dar{
-    margin-left: 20px;
-}
-
-.card .card-content{
-    padding: 0 !important;
-}
-
-.flex-container{
-    
+.row .s6 > p{
+    text-align: right;
 }

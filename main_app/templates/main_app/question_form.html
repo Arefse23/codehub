@@ -2,34 +2,39 @@
 
 {%block content%}
 
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
-<script src="cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
-
-{% if object %}
+{% if object and user.id is question.user.id %}
 <h1>Edit Question</h1>
-{% else %}
-<h1>Add Question</h1>
-{% endif %}
-<h1></h1>
 <form action="" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <table>
         {{form.media}}
         {{form.as_table}}
     </table>
-    <input type="submit" value="Submit!" class="btn blue">
+    <button id="submit-btn" class="grey darken-4 waves-effect waves-light btn" type="submit" name="Confirm" value="signup">
+        Save Changes
+        <i class="material-icons left">save</i>
+    </button>
 </form>
-
+{% else %}
+{% if not object %}
+<h1>Add Question</h1>
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table>
+        {{form.media}}
+        {{form.as_table}}
+    </table>
+    <button id="submit-btn" class="grey darken-4 waves-effect waves-light btn" type="submit" name="Confirm" value="signup">
+        Save Changes
+        <i class="material-icons left">add</i>
+    </button>
+</form>
+{% else %}
+<p>You are not allowed here and you know it ;) </p>
+{% endif %}
+{% endif %}
 
 <script>
-    const dateElement = document.getElementById('id_date');
-    M.Datepicker.init(dateElement, {
-        format: 'yyyy-mm-dd',
-        defaultDate: new Date(),
-        setDefaultDate: true,
-        autoClose: true
-    });
     const categoryElement = document.getElementById('id_category');
     M.FormSelect.init(categoryElement)
 </script>

@@ -16,8 +16,10 @@
     </div>
   </a>
   <div class="card-action">
+    {% if user.is_authenticated and reply.user.id is user.id %}
     <a class="btn blue" href="{% url 'reply_update' reply.id %}">Edit</a>
     <a class="btn blue" href="{% url 'reply_delete' reply.id %}">Delete</a>
+    {% endif %}
   </div>
   </div>
    {% endblock %}

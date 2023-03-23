@@ -5,7 +5,7 @@
 <ul class="collapsible">
 {% for category in categories %}
     <li class="{% if category.id is categories.first.id %}active{% endif %}">
-      <div class="collapsible-header grey darken-4">
+      <div class="collapsible-header grey darken-4 white-text">
           <i class="material-icons">{{ category.icon_code }}</i>
           <!--Category Name-->
           <span>{{ category.name }}</span>
@@ -27,12 +27,22 @@
           </thead>
 
           <tbody>
-            <!--TODO: 3 Recent Questions Loop Here-->
-            {% for question in  questions %}
+            {% for question in questions.all|dictsortreversed:'id' %}
             {% if question.category.id is category.id %}
             <tr>
               <td style="width: 50%;"><a href="{% url 'question_detail' question.id %}">{{ question.title }}</a></td>
-              <td>{{ question.user }}</td>
+              <td>
+                {% load static %}
+                <div class="profile-container list">
+                  <a href="{% url 'profile_detail' question.user.id %}">
+                    <img src="{% if question.user.profile.avatar %}
+                    {% static question.user.profile.avatar|cut:'main_app/static/' %}
+                    {% else %}{% static 'images/profile/guest.png' %}{% endif %}" 
+                    style="vertical-align: middle;">
+                    <span>{{ question.user.username }}</span>
+                  </a>
+                </div>
+              </td>
               <td>{{ question.date }}</td>
             </tr>
             {% endif %}

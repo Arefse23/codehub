@@ -1,51 +1,58 @@
 {% extends 'base.html' %} 
 {% block content %}
 
-<nav id="sub-nav">
-  <ul class="blue-text">
-      <li> 
-        <a class="btn grey darken-4" href="{% url 'question_detail' answer.question.id %}">
-          <i class="material-icons left">arrow_back_ios</i>
-          Return to Question
-        </a>
-      </i>
-  </ul>
-</nav>
-
-
+<div id="sub-nav">
+  <a class="btn grey darken-4" href="{% url 'question_detail' answer.question.id %}">
+    <i class="material-icons left">arrow_back_ios</i>
+    {{ answer.question.title }}
+  </a>
+</div>
 
 <!--==============================Answer Detail Section=========================-->
-<h1>Answer Detail</h1>
-
 <div class="card">
   <div class="card-content ">
-    <div class="grey darken-4 dar"><span class="card-title">Title: {{ answer.title }}</span></div>
-    <div class="flex-container">
-      <div class="main-dar">
-        <p>Body: {{ answer.body|safe}}</p>
-        <p>Date: {{ answer.date }}</p>
+    <span class="card-title">{{ answer.title }}</span>
+    <p>{{ answer.body|safe}}</p>
+
+    <div class="row" >
+
+      <div class="col s6">
         {% load static %}
         <div class="profile-container profile-header comment">
           <a class="dropdown-trigger" href="{% url 'profile_detail' answer.user.id %}">
           <img src="{% if answer.user.profile.avatar %}
           {% static answer.user.profile.avatar|cut:'main_app/static/' %}
           {% else %}{% static 'images/profile/guest.png' %}{% endif %}"
-           style="vertical-align: middle;">
+            style="vertical-align: middle;">
           <span>{{ answer.user.username }}</span></a>
         </div>
       </div>
+
+      <div class="col s6">
+        <p>Date: {{ answer.date }}</p>
+      </div>
     </div>
+
+    
   </div>
   <div class="card-action">
     {% if user.is_authenticated %}
     {% if user.id is answer.user.id %}
-    <a class="btn blue" href="{% url 'answer_update' answer.id %}">Edit</a>
-    <a class="btn blue" href="{% url 'answer_delete' answer.id %}">Delete</a>
+
+    <a class="btn orange-text white" href="{% url 'answer_update' answer.id %}">
+      <i class="material-icons left">edit</i>
+      Edit
+    </a>
+
+    <a class="btn red red-text white" href="{% url 'answer_delete' answer.id %}">
+      <i class="material-icons left">delete</i>
+      Delete
+    </a>
     {% endif %}
     {% endif %}
 
 
-<!--Like button-->
+    <!--Like button-->
     <form action="{% url 'like_answer' answer.id %}" method="post" 
     style="display: inline-block;">
       {% csrf_token %}
@@ -82,49 +89,83 @@
   </div>
 </div>
 
+<!--Add Answer-->
+<button data-target="modal1" class="btn modal-trigger green"><i class="material-icons left">add</i>Add Reply</button>
+<!-- Modal Structure -->
+<div id="modal1" class="modal">
+  <div class="modal-content">
+    <h4>Add Reply</h4>
+    <form action="{% url 'reply_create' answer.id %}" method="post">
+      {% csrf_token %}
+      {{ reply_form.media }}
+      {{ reply_form }}
+      <button id="submit-btn" type="submit" class="btn green">
+        <i class="material-icons left">add</i>
+        Add
+      </button>
+    </form>
+  </div>
+</div>
 
-<!--==================================Reply Detail Section===============================-->
-<form action="{% url 'reply_create' answer.id %}" method="post">
-  {% csrf_token %}
-  {{ reply_form.media }}
-  {{ reply_form }}
-  <button type="submit" class="btn green">Add Reply</button>
-</form>
 
-<hr>
-
+<!--Replies Section-->
+{% if replies.count %}
+<br>
+<h5 style="display: inline-block;">Replies <span class="badge">({{ replies.count }})</span></h5>
+{% else %}
+<p>No reply yet.</p>
+{% endif %}
 {% for reply in replies %}
 <div class="card">
     <div class="card-content ">
-      <div class="grey darken-4 dar"><span class="card-title">Title: {{ reply.title }}</span></div>
-      <div class="flex-container">
-        <div class="main-dar">
-          <p>Body: {{ reply.body|safe}}</p>
-          <p>Date: {{ reply.date }}</p>
-          {% load static %}
-          <div class="profile-container profile-header comment">
-            <a class="dropdown-trigger" href="{% url 'profile_detail' answer.user.id %}">
-            <img src="{% if reply.user.profile.avatar %}
-            {% static reply.user.profile.avatar|cut:'main_app/static/' %}
-            {% else %}{% static 'images/profile/guest.png' %}{% endif %}" 
-            style="vertical-align: middle;">
-            <span>{{ reply.user.username }}</span></a>
+        <span class="card-title">{{ reply.title }}</span>
+        <p>{{ reply.body|safe}}</p>
+        <div class="row">
+
+          <div class="col s6">
+            {% load static %}
+            <div class="profile-container profile-header comment">
+              <a class="dropdown-trigger" href="{% url 'profile_detail' answer.user.id %}">
+              <img src="{% if reply.user.profile.avatar %}
+              {% static reply.user.profile.avatar|cut:'main_app/static/' %}
+              {% else %}{% static 'images/profile/guest.png' %}{% endif %}" 
+              style="vertical-align: middle;">
+              <span>{{ reply.user.username }}</span></a>
+            </div>
           </div>
+
+          <div class="col s6">
+            <p>{{ reply.date }}</p>
+          </div>
+
         </div>
-      </div>
     </div>
 
-    <!--Reply Card Section-->
+  <!--Reply Card Section-->
   <div class="card-action">
     {% if user.is_authenticated %}
     {% if user.id is reply.user.id %}
-    <a class="btn blue" href="{% url 'reply_update' reply.id %}">Edit</a>
-    <a class="btn blue" href="{% url 'reply_delete' reply.id %}">Delete</a>
+    <a class="btn orange-text white" href="{% url 'reply_update' reply.id %}">
+      <i class="material-icons left">edit</i>
+      Edit
+    </a>
+  
+    <a class="btn red-text white" href="{% url 'reply_delete' reply.id %}">
+      <i class="material-icons left">delete</i>
+      Delete
+    </a>
     {% endif %}
     {% endif %}
   </div>
   </div>
 
+{% endfor %}
+
+<!--Messages-->
+{% for message in messages %}
+<script>
+  M.toast({html: '{{ message }}'})
+</script>
 {% endfor %}
 
 {% endblock %}

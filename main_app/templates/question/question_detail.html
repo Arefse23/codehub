@@ -1,137 +1,164 @@
 {% extends 'base.html' %} 
 {% block content %}
 
-<nav id="sub-nav">
-  <ul class="blue-text">
-      <li> 
-        <a class="btn grey darken-4" href="{% url 'category_detail' question.category.id %}">
-          <i class="material-icons left">{{ question.category.icon_code }}</i>
-          {{ question.category.name }} Questions
-        </a>
-      </i>
-  </ul>
-</nav>
+<div id="sub-nav">
+  <a class="btn grey darken-4" href="{% url 'category_detail' question.category.id %}">
+    <i class="material-icons left">{{ question.category.icon_code }}</i>
+    {{ question.category.name }} Questions
+  </a>
+</div>
 
-
-<!--==================================Question Detail Section===============================-->
-<h1>Question Details</h1>
-
+<!--Question Detail Section-->
 <div class="card">
-    <div class="card-content ">
-      <div class="grey darken-4 dar"><span class="card-title">Title: {{ question.title }}</span></div>
-      <div class="flex-container">
-          
-          <div class="main-dar">
-          <p>Body: {{ question.body|safe}}</p>
-          <p>Date: {{ question.date }}</p>
-          {% load static %}
-          
-          <div class="profile-container profile-header comment">
-            <a class="dropdown-trigger" href="{% url 'profile_index' %}">
-            <img src="{% if question.user.profile.avatar %}
-            {% static question.user.profile.avatar|cut:'main_app/static/' %}
-            {% else %}{% static 'images/profile/guest.png' %}{% endif %}" 
-            style="vertical-align: middle;">
-            <span>{{ question.user.username }}</span></a>
-          </div>
-        
-          
-        </div>
+  <div class="card-content">
+    <span class="card-title">{{ question.title }}</span>
+    <p>{{ question.body|safe}}</p>
+    <div class="row">
+      <div class="col s6">
+        {% load static %}
+        <div class="profile-container profile-header comment">
+          <a class="dropdown-trigger" href="{% url 'profile_detail' question.user.id %}">
+          <img src="{% if question.user.profile.avatar %}
+          {% static question.user.profile.avatar|cut:'main_app/static/' %}
+          {% else %}{% static 'images/profile/guest.png' %}{% endif %}" 
+          style="vertical-align: middle;">
+          <span>{{ question.user.username }}</span></a>
+        </div> 
+      </div>
+
+      <div class="col s6 right">
+        <p>{{ question.date }}</p>
       </div>
     </div>
-  
-
+   
+  </div>
   <!--Question Card Section-->
-  {% if user.is_authenticated %}
-  {% if user.id is question.user.id %}
-  <div class="card-action">
-    <a class="btn blue" href="{% url 'update_question' question.id %}">Edit</a>
-    <a class="btn blue" href="{% url 'question_delete' question.id %}">Delete</a>
+{% if user.is_authenticated %}
+{% if user.id is question.user.id %}
+<div class="card-action">
+  <a class="btn orange-text white" href="{% url 'update_question' question.id %}">
+    <i class="material-icons left">edit</i>
+    Edit
+  </a>
+
+  <a class="btn red-text white" href="{% url 'question_delete' question.id %}">
+    <i class="material-icons left">delete</i>
+    Delete
+  </a>
+</div>
+{% endif %}
+{% endif %}
+</div>
+
+
+<!--Add Answer-->
+<button data-target="modal1" class="btn modal-trigger green"><i class="material-icons left">add</i>Add Answer</button>
+<!-- Modal Structure -->
+<div id="modal1" class="modal">
+  <div class="modal-content">
+    <h4>Add Answer</h4>
+    <form action="{% url 'answer_create' question.id %}" method="post">
+      {% csrf_token %}
+      {{ answer_form.media }}
+      {{ answer_form }}
+      <button id="submit-btn" type="submit" class="btn green"><i class="material-icons left">add</i>Add</button>
+    </form>
   </div>
-  {% endif %}
-  {% endif %}
-  </div>
+</div>
 
-
-
-  <!--==================================Answer Detail Section===============================-->
-  <form action="{% url 'answer_create' question.id %}" method="post">
-    {% csrf_token %}
-    {{ answer_form.media }}
-    {{ answer_form }}
-    <button type="submit" class="btn green">Add Answer</button>
-  </form>
-
-  <hr>
-
-  {% for answer in answers %}
+<!--Answers Section-->
+{% if answers.count %}
+<br>
+<h5 style="display: inline-block;">Answers <span class="badge">({{ answers.count }})</span></h5>
+{% else %}
+<p>No answer yet.</p>
+{% endif %}
+{% for answer in answers %}
   <div class="card">
     <div class="card-content ">
-      <div class="grey darken-4 dar"><span class="card-title">Title: {{ answer.title }}</span></div>
-      <div class="flex-container">
-        <div class="main-dar">
-          
-          <p>Body: {{ answer.body|safe}}</p>
-          <p>Date: {{ answer.date }}</p>
+      <span class="card-title">{{ answer.title }}</span>
+      <p>{{ answer.body|safe}}</p>
+      <div class="row">
+
+        <div class="col s6">
           {% load static %}
           <div class="profile-container profile-header comment">
-            <a class="dropdown-trigger" href="{% url 'profile_index' %}">zz
-            <img src="{% if answer.user.profile.avatar %}
-            {% static answer.user.profile.avatar|cut:'main_app/static/' %}
-            {% else %}{% static 'images/profile/guest.png' %}{% endif %}" 
-            style="vertical-align: middle;">
-            <span>{{ answer.user.username }}</span></a>
+            <a href="{% url 'profile_detail' answer.user.id %}">
+              <img src="{% if answer.user.profile.avatar %}
+              {% static answer.user.profile.avatar|cut:'main_app/static/' %}
+              {% else %}{% static 'images/profile/guest.png' %}{% endif %}" 
+              style="vertical-align: middle;">
+              <span>{{ answer.user.username }}</span>
+            </a>
           </div>
-          
         </div>
-        <div><a class="btn blue" href="{% url 'answer_detail' answer.id %}">View Replies</a></div>
+
+        <div class="col s6">
+          <p>{{ answer.date }}</p>
+        </div>
+
       </div>
     </div>
-    <div class="card-action">
+  <div class="card-action">
 
-      <!--Answer Card Section-->
-      {% if user.is_authenticated %}
-      {% if user.id is answer.user.id %}
-      <a class="btn blue" href="{% url 'answer_update' answer.id %}">Edit</a>
-      <a class="btn blue" href="{% url 'answer_delete' answer.id %}">Delete</a>
+    <!--Answer Card Section-->
+    {% if user.is_authenticated %}
+    {% if user.id is answer.user.id %}
+    <a class="btn orange-text white" href="{% url 'answer_update' answer.id %}">
+      <i class="material-icons left">edit</i>
+      Edit
+    </a>
+
+    <a class="btn red-text white" href="{% url 'answer_delete' answer.id %}">
+      <i class="material-icons left">delete</i>
+      Delete
+    </a>
+    {% endif %}
+    {% endif %}
+
+    <!--Like Button-->
+    <form action="{% url 'like_answer' answer.id %}" method="post" 
+    style="display: inline-block;">
+      {% csrf_token %}
+      {% if user in answer.likes.all %}
+      <button type="submit" class="btn white black-text">
+        <i class="material-icons right blue-text">thumb_up</i>
+        {{ answer.likes.count }}
+      </button>
+      {% else %}
+      <button type="submit" class="btn white black-text">
+        <i class="material-icons right">thumb_up</i>
+        {{ answer.likes.count }}
+      </button>
       {% endif %}
+    </form>
+
+    <!--Dislike Button-->
+    <form action="{% url 'dislike_answer' answer.id %}" 
+    method="post" style="display: inline-block;">
+      {% csrf_token %}
+      {% if user in answer.dislikes.all %}
+      <button type="submit" class="btn white black-text">
+        <i class="material-icons right blue-text">thumb_down</i>
+        {{ answer.dislikes.count }}
+      </button>
+      {% else %}
+      <button type="submit" class="btn white black-text">
+        <i class="material-icons right">thumb_down</i>
+        {{ answer.dislikes.count }}
+      </button>
       {% endif %}
+    </form>
 
-      <!--Like Button-->
-      <form action="{% url 'like_answer' answer.id %}" method="post" 
-      style="display: inline-block;">
-        {% csrf_token %}
-        {% if user in answer.likes.all %}
-        <button type="submit" class="btn white black-text">
-          <i class="material-icons right blue-text">thumb_up</i>
-          {{ answer.likes.count }}
-        </button>
-        {% else %}
-        <button type="submit" class="btn white black-text">
-          <i class="material-icons right">thumb_up</i>
-          {{ answer.likes.count }}
-        </button>
-        {% endif %}
-      </form>
-
-      <!--Dislike Button-->
-      <form action="{% url 'dislike_answer' answer.id %}" 
-      method="post" style="display: inline-block;">
-        {% csrf_token %}
-        {% if user in answer.dislikes.all %}
-        <button type="submit" class="btn white black-text">
-          <i class="material-icons right blue-text">thumb_down</i>
-          {{ answer.dislikes.count }}
-        </button>
-        {% else %}
-        <button type="submit" class="btn white black-text">
-          <i class="material-icons right">thumb_down</i>
-          {{ answer.dislikes.count }}
-        </button>
-        {% endif %}
-      </form>
-
-    </div>
+    <!-- Replies Link -->
+    <a class="btn blue right" href="{% url 'answer_detail' answer.id %}">View Replies</a></div>
   </div>
+{% endfor %}
+
+<!--Messages-->
+{% for message in messages %}
+<script>
+  M.toast({html: '{{ message }}'})
+</script>
 {% endfor %}
 {% endblock %}
